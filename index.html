@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dzikr Counter</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #0f172a;
+            color: #10b981;
+            font-family: system-ui, -apple-system, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        #counter {
+            font-size: 8rem;
+            font-weight: bold;
+        }
+        #resetBtn {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background-color: #334155;
+            color: #cbd5e1;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body id="tapArea">
+
+    <div id="counter">0</div>
+    <button id="resetBtn">↺</button>
+
+    <script>
+        const counterEl = document.getElementById('counter');
+        const resetBtn = document.getElementById('resetBtn');
+        const tapArea = document.getElementById('tapArea');
+
+        let count = localStorage.getItem('dzikr_count') ? parseInt(localStorage.getItem('dzikr_count')) : 0;
+        counterEl.innerText = count;
+
+        tapArea.addEventListener('click', () => {
+            count++;
+            counterEl.innerText = count;
+            localStorage.setItem('dzikr_count', count);
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        });
+
+        resetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if(confirm('Reset hitungan?')) {
+                count = 0;
+                counterEl.innerText = count;
+                localStorage.setItem('dzikr_count', count);
+            }
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker terdaftar'))
+                    .catch(err => console.log('Service Worker gagal', err));
+            });
+        }
+    </script>
+</body>
+</html>
